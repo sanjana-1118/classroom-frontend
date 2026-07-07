@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8000",
+      "url": "classroom-backend-production-a01c.up.railway.app",
       "description": "Local dev server"
     },
     {

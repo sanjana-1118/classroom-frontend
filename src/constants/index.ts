@@ -55,7 +55,7 @@ export const ALLOWED_TYPES = [
   "image/webp",
 ];
 
-const DEFAULT_BACKEND_URL = "http://localhost:8000/api/";
+const DEFAULT_BACKEND_URL = "classroom-backend-production-a01c.up.railway.app";
 
 export const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
