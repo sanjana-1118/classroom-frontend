@@ -202,14 +202,20 @@ const ClassesCreate = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {subjects.map((subject) => (
-                              <SelectItem
-                                key={subject.id}
-                                value={subject.id.toString()}
-                              >
-                                {subject.name} ({subject.code})
+                            {subjects.length === 0 ? (
+                              <SelectItem value="" disabled>
+                                No subjects found
                               </SelectItem>
-                            ))}
+                            ) : (
+                              subjects.map((subject) => (
+                                <SelectItem
+                                  key={subject.id}
+                                  value={subject.id.toString()}
+                                >
+                                  {subject.name} {subject.code ? `(${subject.code})` : ""}
+                                </SelectItem>
+                              ))
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -236,11 +242,23 @@ const ClassesCreate = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {teachers.map((teacher) => (
-                              <SelectItem key={teacher.id} value={teacher.id}>
-                                {teacher.name}
+                            {teachers.length === 0 ? (
+                              <SelectItem value="" disabled>
+                                No teachers found
                               </SelectItem>
-                            ))}
+                            ) : (
+                              teachers.map((teacher) => {
+                                const teacherId = teacher.id?.toString() ?? "";
+                                const teacherName = teacher.name || teacher.email || "Unknown";
+                                const label = `Teacher ${teacherName}`;
+
+                                return (
+                                  <SelectItem key={teacherId} value={teacherId}>
+                                    {label}
+                                  </SelectItem>
+                                );
+                              })
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />

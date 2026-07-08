@@ -47,7 +47,7 @@ export const DEPARTMENT_OPTIONS = DEPARTMENTS.map((dept) => ({
   label: dept,
 }));
 
-export const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+export const MAX_FILE_SIZE = 3 * 1024 * 1024;
 export const ALLOWED_TYPES = [
   "image/png",
   "image/jpeg",
@@ -57,10 +57,13 @@ export const ALLOWED_TYPES = [
 
 const DEFAULT_BACKEND_URL = "classroom-backend-production-a01c.up.railway.app";
 
-export const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
-export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-export const BACKEND_BASE_URL =
-  import.meta.env.VITE_BACKEND_BASE_URL ?? DEFAULT_BACKEND_URL;
+const sanitizeUrl = (url: string) => {
+  return url.startsWith("http") ? url : `https://${url}`;
+};
+
+const rawBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL ?? DEFAULT_BACKEND_URL;
+
+export const BACKEND_BASE_URL = sanitizeUrl(rawBaseUrl);
 
 export const BASE_URL = import.meta.env.VITE_API_URL ?? BACKEND_BASE_URL;
 export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY;
@@ -68,5 +71,6 @@ export const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY;
 
 export const REFRESH_TOKEN_URL = new URL("refresh-token", BACKEND_BASE_URL).toString();
 
-export const CLOUDINARY_UPLOAD_PRESET = import.meta.env
-  .VITE_CLOUDINARY_UPLOAD_PRESET;
+export const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
+export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+export const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
