@@ -135,7 +135,6 @@ const ClassesShow = () => {
         {classDetails.bannerUrl ? (
           classDetails.bannerUrl.includes("res.cloudinary.com") &&
           classDetails.bannerCldPubId ? (
-            // @ts-expect-error AdvancedImage has outdated types for React 18+
             <AdvancedImage
               cldImg={bannerPhoto(
                 classDetails.bannerCldPubId ?? "",
