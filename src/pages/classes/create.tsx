@@ -129,9 +129,9 @@ const ClassesCreate = () => {
                           value={
                             field.value
                               ? {
-                                  url: field.value,
-                                  publicId: bannerPublicId ?? "",
-                                }
+                                url: field.value,
+                                publicId: bannerPublicId ?? "",
+                              }
                               : null
                           }
                           onChange={(file) => {
