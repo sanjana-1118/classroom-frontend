@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
-import { useList } from "@refinedev/core";
-import { useTable } from "@refinedev/react-table";
-import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { useTable } from "@refinedev/react-table";
+import { useList } from "@refinedev/core";
 
 import {
   Select,
@@ -14,16 +14,136 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { CreateButton } from "@/components/refine-ui/buttons/create";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
+import { DataTable } from "@/components/refine-ui/data-table/data-table";
+import { ShowButton } from "@/components/refine-ui/buttons/show";
 
-import { ClassDetails, Subject, User } from "@/types";
+import { Subject, User } from "@/types";
+
+type ClassListItem = {
+  id: number;
+  name: string;
+  status: "active" | "inactive";
+  bannerUrl?: string;
+  subject?: {
+    name: string;
+  };
+  teacher?: {
+    name: string;
+  };
+  capacity: number;
+};
 
 const ClassesList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
+
+  const classColumns = useMemo<ColumnDef<ClassListItem>[]>(
+    () => [
+      {
+        id: "banner",
+        accessorKey: "bannerUrl",
+        size: 120,
+        header: () => <p className="column-title ml-2">Banner</p>,
+        cell: ({ getValue }) => {
+          const bannerUrl = getValue<string>();
+
+          return bannerUrl ? (
+            <img
+              src={bannerUrl}
+              alt="Class banner"
+              className="ml-2 h-10 w-10 rounded-md object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <span className="text-muted-foreground ml-2">No image</span>
+          );
+        },
+      },
+      {
+        id: "name",
+        accessorKey: "name",
+        size: 220,
+        header: () => <p className="column-title">Class Name</p>,
+        cell: ({ getValue }) => {
+          const className = getValue<string>();
+
+          return <span className="text-foreground">{className}</span>;
+        },
+      },
+      {
+        id: "status",
+        accessorKey: "status",
+        size: 140,
+        header: () => <p className="column-title">Status</p>,
+        cell: ({ getValue }) => {
+          const status = getValue<"active" | "inactive">();
+          const variant = status === "active" ? "default" : "secondary";
+
+          return <Badge variant={variant}>{status}</Badge>;
+        },
+      },
+      {
+        id: "subject",
+        accessorKey: "subject.name",
+        size: 200,
+        header: () => <p className="column-title">Subject</p>,
+        cell: ({ getValue }) => {
+          const subjectName = getValue<string>();
+
+          return subjectName ? (
+            <Badge variant="secondary">{subjectName}</Badge>
+          ) : (
+            <span className="text-muted-foreground">Not set</span>
+          );
+        },
+      },
+      {
+        id: "teacher",
+        accessorKey: "teacher.name",
+        size: 200,
+        header: () => <p className="column-title">Teacher</p>,
+        cell: ({ getValue }) => {
+          const teacherName = getValue<string>();
+
+          return teacherName ? (
+            <span className="text-foreground">{teacherName}</span>
+          ) : (
+            <span className="text-muted-foreground">Not assigned</span>
+          );
+        },
+      },
+      {
+        id: "capacity",
+        accessorKey: "capacity",
+        size: 120,
+        header: () => <p className="column-title">Capacity</p>,
+        cell: ({ getValue }) => {
+          const capacity = getValue<number>();
+
+          return <span className="text-foreground">{capacity}</span>;
+        },
+      },
+      {
+        id: "details",
+        size: 140,
+        header: () => <p className="column-title">Details</p>,
+        cell: ({ row }) => (
+          <ShowButton
+            resource="classes"
+            recordItemId={row.original.id}
+            variant="outline"
+            size="sm"
+          >
+            View
+          </ShowButton>
+        ),
+      },
+    ],
+    []
+  );
 
   const { query: subjectsQuery } = useList<Subject>({
     resource: "subjects",
@@ -48,76 +168,6 @@ const ClassesList = () => {
 
   const subjects = subjectsQuery.data?.data || [];
   const teachers = teachersQuery.data?.data || [];
-
-  const classColumns = useMemo<ColumnDef<ClassDetails>[]>(
-    () => [
-      {
-        id: "banner",
-        header: () => <p className="column-title">Banner</p>,
-        cell: ({ row }) => {
-          const bannerUrl = row.original.bannerUrl;
-
-          return bannerUrl ? (
-            <img
-              src={bannerUrl}
-              alt={row.original.name}
-              className="h-10 w-16 rounded-md object-cover"
-            />
-          ) : (
-            <div className="h-10 w-16 rounded-md bg-muted" />
-          );
-        },
-        size: 90,
-      },
-      {
-        id: "name",
-        accessorKey: "name",
-        header: () => <p className="column-title">Class Name</p>,
-        cell: ({ getValue }) => (
-          <span className="text-foreground">{getValue<string>()}</span>
-        ),
-        size: 220,
-      },
-      {
-        id: "status",
-        accessorKey: "status",
-        header: () => <p className="column-title">Status</p>,
-        cell: ({ getValue }) => {
-          const status = getValue<string>();
-          const isActive = status === "active";
-
-          return (
-            <Badge variant={isActive ? "default" : "secondary"}>
-              {status}
-            </Badge>
-          );
-        },
-        size: 110,
-      },
-      {
-        id: "subject",
-        accessorKey: "subject.name",
-        header: () => <p className="column-title">Subject</p>,
-        cell: ({ getValue }) => <span>{getValue<string>()}</span>,
-        size: 180,
-      },
-      {
-        id: "teacher",
-        accessorKey: "teacher.name",
-        header: () => <p className="column-title">Teacher</p>,
-        cell: ({ getValue }) => <span>{getValue<string>()}</span>,
-        size: 180,
-      },
-      {
-        id: "capacity",
-        accessorKey: "capacity",
-        header: () => <p className="column-title">Capacity</p>,
-        cell: ({ getValue }) => <span>{getValue<number>()}</span>,
-        size: 90,
-      },
-    ],
-    []
-  );
 
   const subjectFilters =
     selectedSubject === "all"
@@ -151,18 +201,25 @@ const ClassesList = () => {
       ]
     : [];
 
-  const table = useTable<ClassDetails>({
+  const classesTable = useTable<ClassListItem>({
     columns: classColumns,
     refineCoreProps: {
       resource: "classes",
-      syncWithLocation: true, // Syncs URL and table state
-      pagination: { pageSize: 10, mode: "server" },
+      pagination: {
+        pageSize: 10,
+        mode: "server",
+      },
       filters: {
+        // Compose refine filters from the current UI selections.
         permanent: [...subjectFilters, ...teacherFilters, ...searchFilters],
       },
-      sorters: { initial: [{ field: "id", order: "desc" }] },
-      queryOptions: {
-        staleTime: 0, // Forces fresh fetch from DB
+      sorters: {
+        initial: [
+          {
+            field: "id",
+            order: "desc",
+          },
+        ],
       },
     },
   });
@@ -173,14 +230,14 @@ const ClassesList = () => {
       <h1 className="page-title">Classes</h1>
 
       <div className="intro-row">
-        <p>Manage classes and schedules.</p>
+        <p>Quick access to essential metrics and management tools.</p>
 
         <div className="actions-row">
           <div className="search-field">
             <Search className="search-icon" />
             <Input
               type="text"
-              placeholder="Search classes by name..."
+              placeholder="Search by name..."
               className="pl-10 w-full"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
@@ -189,7 +246,7 @@ const ClassesList = () => {
 
           <div className="flex gap-2 w-full sm:w-auto">
             <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-              <SelectTrigger className="">
+              <SelectTrigger>
                 <SelectValue placeholder="Filter by subject" />
               </SelectTrigger>
 
@@ -204,7 +261,7 @@ const ClassesList = () => {
             </Select>
 
             <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
-              <SelectTrigger className="">
+              <SelectTrigger>
                 <SelectValue placeholder="Filter by teacher" />
               </SelectTrigger>
 
@@ -223,7 +280,7 @@ const ClassesList = () => {
         </div>
       </div>
 
-      <DataTable table={table} />
+      <DataTable table={classesTable} />
     </ListView>
   );
 };
