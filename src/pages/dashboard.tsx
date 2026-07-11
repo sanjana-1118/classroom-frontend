@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { BookOpen, GraduationCap, LayoutDashboard, Users, Building2 } from 'lucide-react'
+import { BookOpen, GraduationCap, LayoutDashboard } from 'lucide-react'
 
 const Dashboard = () => {
     return (
@@ -15,7 +15,7 @@ const Dashboard = () => {
                         Welcome to Classroom
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Your complete platform for managing educational institutions.
+                        Your complete platform for managing educational courses and schedules.
                     </p>
                 </div>
             </div>
@@ -27,39 +27,23 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <p className="text-muted-foreground leading-relaxed mb-6">
-                            This application is built to streamline academic administration. It serves as a centralized hub to connect departments, subjects, teachers, and students, ensuring smooth scheduling and class management.
+                            This application is built to streamline your academic administration. It provides a centralized control panel to efficiently manage your educational offerings and track scheduling.
                         </p>
                         
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
-                                <Building2 className="w-5 h-5 text-blue-500 mt-0.5" />
-                                <div>
-                                    <h3 className="font-semibold text-sm">Departments & Subjects</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Organize curricula by grouping subjects into distinct academic departments.</p>
-                                </div>
-                            </div>
-                            
-                            <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
+                            <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30 border border-transparent hover:border-border transition-colors">
                                 <BookOpen className="w-5 h-5 text-indigo-500 mt-0.5" />
                                 <div>
+                                    <h3 className="font-semibold text-sm">Subjects Management</h3>
+                                    <p className="text-xs text-muted-foreground mt-1">Easily create and organize the curriculum by managing the core subjects offered by your institution.</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30 border border-transparent hover:border-border transition-colors">
+                                <GraduationCap className="w-5 h-5 text-emerald-500 mt-0.5" />
+                                <div>
                                     <h3 className="font-semibold text-sm">Class Scheduling</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Create classes, assign teachers, and manage capacities and schedules.</p>
-                                </div>
-                            </div>
-                            
-                            <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
-                                <Users className="w-5 h-5 text-emerald-500 mt-0.5" />
-                                <div>
-                                    <h3 className="font-semibold text-sm">Student Enrollment</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Allow students to enroll in active classes using unique invite codes.</p>
-                                </div>
-                            </div>
-                            
-                            <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
-                                <GraduationCap className="w-5 h-5 text-purple-500 mt-0.5" />
-                                <div>
-                                    <h3 className="font-semibold text-sm">Academic Tracking</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Maintain a historical record of active, inactive, and archived classes.</p>
+                                    <p className="text-xs text-muted-foreground mt-1">Create specific classes for your subjects, assign teachers, and manage class capacities and status.</p>
                                 </div>
                             </div>
                         </div>
