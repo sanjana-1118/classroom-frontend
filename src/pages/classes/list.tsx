@@ -155,11 +155,15 @@ const ClassesList = () => {
     columns: classColumns,
     refineCoreProps: {
       resource: "classes",
+      syncWithLocation: true, // Syncs URL and table state
       pagination: { pageSize: 10, mode: "server" },
       filters: {
         permanent: [...subjectFilters, ...teacherFilters, ...searchFilters],
       },
       sorters: { initial: [{ field: "id", order: "desc" }] },
+      queryOptions: {
+        staleTime: 0, // Forces fresh fetch from DB
+      },
     },
   });
 
