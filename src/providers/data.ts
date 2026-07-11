@@ -15,7 +15,7 @@ const options: CreateDataProviderOptions = {
       const params: Record<string, string | number> = {};
 
       if (pagination?.mode !== "off") {
-        const page = pagination?.currentPage ?? 1;
+        const page = pagination?.current ?? 1;
         const pageSize = pagination?.pageSize ?? 10;
 
         params.page = page;

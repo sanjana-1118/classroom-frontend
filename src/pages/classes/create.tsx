@@ -203,7 +203,7 @@ const ClassesCreate = () => {
                           </FormControl>
                           <SelectContent>
                             {subjects.length === 0 ? (
-                              <SelectItem value="" disabled>
+                              <SelectItem value="empty" disabled>
                                 No subjects found
                               </SelectItem>
                             ) : (
@@ -243,7 +243,7 @@ const ClassesCreate = () => {
                           </FormControl>
                           <SelectContent>
                             {teachers.length === 0 ? (
-                              <SelectItem value="" disabled>
+                              <SelectItem value="empty" disabled>
                                 No teachers found
                               </SelectItem>
                             ) : (
