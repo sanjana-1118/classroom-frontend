@@ -125,10 +125,6 @@ const SubjectListPage = () => {
     },
   });
 
-  useEffect(() => {
-    subjectTable.setPageIndex(0);
-  }, [searchQuery, selectedDepartment, subjectTable]);
-
   return (
     <ListView>
       <Breadcrumb />

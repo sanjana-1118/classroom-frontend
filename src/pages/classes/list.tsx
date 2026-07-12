@@ -224,10 +224,6 @@ const ClassesList = () => {
     },
   });
 
-  useEffect(() => {
-    classesTable.setPageIndex(0);
-  }, [searchQuery, selectedSubject, selectedTeacher, classesTable]);
-
   return (
     <ListView>
       <Breadcrumb />
