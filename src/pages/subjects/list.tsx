@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -124,6 +124,10 @@ const SubjectListPage = () => {
       },
     },
   });
+
+  useEffect(() => {
+    subjectTable.setPageIndex(0);
+  }, [searchQuery, selectedDepartment, subjectTable]);
 
   return (
     <ListView>

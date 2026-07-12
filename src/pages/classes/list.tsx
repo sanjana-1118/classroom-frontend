@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTable } from "@refinedev/react-table";
 import { useList } from "@refinedev/core";
@@ -223,6 +223,10 @@ const ClassesList = () => {
       },
     },
   });
+
+  useEffect(() => {
+    classesTable.setPageIndex(0);
+  }, [searchQuery, selectedSubject, selectedTeacher, classesTable]);
 
   return (
     <ListView>
