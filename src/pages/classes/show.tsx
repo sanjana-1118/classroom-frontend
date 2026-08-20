@@ -1,12 +1,12 @@
 import { AdvancedImage } from "@cloudinary/react";
-import { useShow } from "@refinedev/core";
+import { useShow, useCreate, useSelect, useList } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router";
 
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
-import { ShowButton } from "@/components/refine-ui/buttons/show";
+import { DeleteButton } from "@/components/refine-ui/buttons/delete";
 import {
   ShowView,
   ShowViewHeader,
@@ -16,15 +16,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { bannerPhoto } from "@/lib/cloudinary";
 import { ClassDetails } from "@/types";
 
-type ClassUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  image?: string | null;
+type EnrollmentRecord = {
+  id: number;
+  classId: number;
+  studentId: string;
+  createdAt: string;
+  student: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    image?: string | null;
+  };
 };
 
 const ClassesShow = () => {
@@ -37,63 +44,107 @@ const ClassesShow = () => {
 
   const classDetails = query.data?.data;
 
-  const studentColumns = useMemo<ColumnDef<ClassUser>[]>(
+  // Enrollment Logic
+  const [selectedStudentId, setSelectedStudentId] = useState<string>("");
+  const { mutate: createEnrollment, mutationResult } = useCreate() as any;
+  const isEnrolling = mutationResult?.isPending || mutationResult?.isLoading;
+
+  // Fetch all enrollments for this class (unpaginated) to filter out enrolled students from the dropdown
+  const { query: allEnrollmentsQuery } = useList<EnrollmentRecord>({
+    resource: "enrollments",
+    filters: [{ field: "classId", operator: "eq", value: classId }],
+    pagination: { mode: "off" },
+  });
+
+  const enrolledStudentIds = useMemo(
+    () => new Set(allEnrollmentsQuery.data?.data?.map((e) => String(e.studentId)) || []),
+    [allEnrollmentsQuery.data]
+  );
+
+  const { options: studentOptions } = useSelect({
+    resource: "students",
+    optionLabel: "name",
+    optionValue: "id",
+  });
+
+  const availableStudentOptions = useMemo(
+    () => studentOptions.filter((opt) => !enrolledStudentIds.has(String(opt.value))),
+    [studentOptions, enrolledStudentIds]
+  );
+
+  const handleEnroll = () => {
+    if (!selectedStudentId || selectedStudentId === "none") return;
+    createEnrollment(
+      {
+        resource: "enrollments",
+        values: {
+          classId,
+          studentId: selectedStudentId,
+        },
+      },
+      {
+        onSuccess: () => {
+          setSelectedStudentId("");
+        },
+      }
+    );
+  };
+
+  const studentColumns = useMemo<ColumnDef<EnrollmentRecord>[]>(
     () => [
       {
         id: "name",
-        accessorKey: "name",
+        accessorKey: "student.name",
         size: 240,
         header: () => <p className="column-title">Student</p>,
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <Avatar className="size-7">
-              {row.original.image && (
-                <AvatarImage src={row.original.image} alt={row.original.name} />
+              {row.original.student?.image && (
+                <AvatarImage src={row.original.student.image} alt={row.original.student.name} />
               )}
-              <AvatarFallback>{getInitials(row.original.name)}</AvatarFallback>
+              <AvatarFallback>{getInitials(row.original.student?.name)}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col truncate">
-              <span className="truncate">{row.original.name}</span>
+              <span className="truncate">{row.original.student?.name}</span>
               <span className="text-xs text-muted-foreground truncate">
-                {row.original.email}
+                {row.original.student?.email}
               </span>
             </div>
           </div>
         ),
       },
       {
-        id: "details",
+        id: "actions",
         size: 140,
-        header: () => <p className="column-title">Details</p>,
+        header: () => <p className="column-title">Actions</p>,
         cell: ({ row }) => (
-          <ShowButton
-            resource="users"
+          <DeleteButton
+            resource="enrollments"
             recordItemId={row.original.id}
-            variant="outline"
             size="sm"
-          >
-            View
-          </ShowButton>
+            hideText
+          />
         ),
       },
     ],
     []
   );
 
-  const studentsTable = useTable<ClassUser>({
+  const studentsTable = useTable<EnrollmentRecord>({
     columns: studentColumns,
     refineCoreProps: {
-      resource: `classes/${classId}/users`,
+      resource: "enrollments",
       pagination: {
-        pageSize: 3,
+        pageSize: 5,
         mode: "server",
       },
       filters: {
         permanent: [
           {
-            field: "role",
+            field: "classId",
             operator: "eq",
-            value: "student",
+            value: classId,
           },
         ],
       },
@@ -116,12 +167,7 @@ const ClassesShow = () => {
   }
 
   const teacherName = classDetails.teacher?.name ?? "Unknown";
-  const teacherInitials = teacherName
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
+  const teacherInitials = getInitials(teacherName);
 
   const placeholderUrl = `https://placehold.co/600x400?text=${encodeURIComponent(
     teacherInitials || "NA"
@@ -163,8 +209,17 @@ const ClassesShow = () => {
               <p>{classDetails.description}</p>
             </div>
 
-            <div>
-              <Badge variant="outline">{classDetails.capacity} spots</Badge>
+            <div className="flex gap-2">
+              <Badge variant="outline">
+                {classDetails.enrollmentCount ?? 0} / {classDetails.capacity} Enrolled
+              </Badge>
+              {(() => {
+                const enrolled = classDetails.enrollmentCount ?? 0;
+                const available = classDetails.capacity - enrolled;
+                if (available <= 0) return <Badge variant="destructive">Full</Badge>;
+                if (available <= 5) return <Badge variant="secondary">Nearly Full</Badge>;
+                return <Badge variant="default">Available</Badge>;
+              })()}
               <Badge
                 variant={
                   classDetails.status === "active" ? "default" : "secondary"
@@ -220,20 +275,34 @@ const ClassesShow = () => {
 
         <Separator />
 
-        {/* Join Class Section */}
+        {/* Enroll Student Section */}
         <div className="join">
-          <h2>🎓 Join Class</h2>
-
-          <ol>
-            <li>Ask your teacher for the invite code.</li>
-            <li>Click on &quot;Join Class&quot; button.</li>
-            <li>Paste the code and click &quot;Join&quot;</li>
-          </ol>
+          <h2>🎓 Enroll Student</h2>
+          <div className="flex gap-4 mt-4 items-center flex-wrap">
+            <Select 
+              value={selectedStudentId || undefined} 
+              onValueChange={setSelectedStudentId}
+            >
+              <SelectTrigger className="w-full sm:w-[300px]">
+                <SelectValue placeholder="Select an available student" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableStudentOptions.length === 0 ? (
+                  <SelectItem value="none" disabled>No available students</SelectItem>
+                ) : (
+                  availableStudentOptions.map((opt) => (
+                    <SelectItem key={String(opt.value)} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <Button onClick={handleEnroll} disabled={!selectedStudentId || selectedStudentId === "none" || isEnrolling}>
+              {isEnrolling ? "Enrolling..." : "Enroll"}
+            </Button>
+          </div>
         </div>
-
-        <Button size="lg" className="w-full">
-          Join Class
-        </Button>
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">

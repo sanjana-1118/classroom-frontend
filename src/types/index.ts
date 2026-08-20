@@ -92,6 +92,7 @@ export type Schedule = {
 export type Department = {
   id: number;
   name: string;
+  code: string;
   description: string;
 };
 
@@ -101,6 +102,7 @@ export type ClassDetails = {
   description: string;
   status: "active" | "inactive";
   capacity: number;
+  enrollmentCount?: number;
   courseCode: string;
   courseName: string;
   bannerUrl?: string;
@@ -119,4 +121,21 @@ export type SignUpPayload = {
   image?: string;
   imageCldPubId?: string;
   role: UserRole;
+};
+
+export type Announcement = {
+  id: number;
+  title: string;
+  content: string;
+  authorId: string;
+  classId: number;
+  createdAt: string;
+  author?: Pick<User, "id" | "name" | "email">;
+  class?: Pick<ClassDetails, "id" | "name">;
+};
+
+export type TimetableClass = Pick<ClassDetails, "id" | "name" | "schedules"> & {
+  subject?: { name: string; code: string };
+  teacher?: { name: string };
+  department?: { name: string };
 };

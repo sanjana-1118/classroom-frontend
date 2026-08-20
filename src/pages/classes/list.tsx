@@ -2,7 +2,7 @@ import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTable } from "@refinedev/react-table";
-import { useList } from "@refinedev/core";
+import { useGetIdentity, useList } from "@refinedev/core";
 
 import {
   Select,
@@ -18,6 +18,8 @@ import { CreateButton } from "@/components/refine-ui/buttons/create";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { ShowButton } from "@/components/refine-ui/buttons/show";
+import { EditButton } from "@/components/refine-ui/buttons/edit";
+import { DeleteButton } from "@/components/refine-ui/buttons/delete";
 
 import { Subject, User } from "@/types";
 
@@ -33,9 +35,11 @@ type ClassListItem = {
     name: string;
   };
   capacity: number;
+  enrollmentCount?: number;
 };
 
 const ClassesList = () => {
+  const { data: identity } = useGetIdentity<User>();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
@@ -118,35 +122,77 @@ const ClassesList = () => {
       {
         id: "capacity",
         accessorKey: "capacity",
-        size: 120,
+        size: 150,
         header: () => <p className="column-title">Capacity</p>,
-        cell: ({ getValue }) => {
+        cell: ({ row, getValue }) => {
           const capacity = getValue<number>();
+          const enrolled = row.original.enrollmentCount || 0;
+          const available = capacity - enrolled;
+          
+          let variant = "default";
+          let label = "Available";
+          
+          if (available <= 0) {
+            variant = "destructive";
+            label = "Full";
+          } else if (available <= 5) {
+            variant = "secondary";
+            label = "Nearly Full";
+          }
 
-          return <span className="text-foreground">{capacity}</span>;
+          return (
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium">
+                {enrolled} / {capacity} Enrolled
+              </span>
+              <Badge variant={variant as any} className="w-fit text-xs">
+                {label}
+              </Badge>
+            </div>
+          );
         },
       },
       {
-        id: "details",
-        size: 140,
-        header: () => <p className="column-title">Details</p>,
+        id: "actions",
+        size: 200,
+        header: () => <p className="column-title">Actions</p>,
         cell: ({ row }) => (
-          <ShowButton
-            resource="classes"
-            recordItemId={row.original.id}
-            variant="outline"
-            size="sm"
-          >
-            View
-          </ShowButton>
+          <div className="flex gap-2">
+            <ShowButton
+              resource="classes"
+              recordItemId={row.original.id}
+              variant="outline"
+              size="sm"
+              hideText
+            />
+            {identity?.role !== "student" && (
+              <>
+                <EditButton
+                  resource="classes"
+                  recordItemId={row.original.id}
+                  variant="outline"
+                  size="sm"
+                  hideText
+                />
+                <DeleteButton
+                  resource="classes"
+                  recordItemId={row.original.id}
+                  variant="outline"
+                  size="sm"
+                  hideText
+                />
+              </>
+            )}
+          </div>
         ),
       },
     ],
-    []
+    [identity?.role]
   );
 
   const { query: subjectsQuery } = useList<Subject>({
     resource: "subjects",
+    queryOptions: { enabled: identity?.role !== "student" },
     pagination: {
       pageSize: 100,
     },
@@ -154,6 +200,7 @@ const ClassesList = () => {
 
   const { query: teachersQuery } = useList<User>({
     resource: "users",
+    queryOptions: { enabled: identity?.role !== "student" },
     filters: [
       {
         field: "role",
@@ -245,37 +292,41 @@ const ClassesList = () => {
           </div>
 
           <div className="flex gap-2 w-full sm:w-auto">
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by subject" />
-              </SelectTrigger>
+            {identity?.role !== "student" && (
+              <>
+                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by subject" />
+                  </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject.id} value={subject.name}>
-                    {subject.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  <SelectContent>
+                    <SelectItem value="all">All Subjects</SelectItem>
+                    {subjects.map((subject) => (
+                      <SelectItem key={subject.id} value={subject.name}>
+                        {subject.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-            <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by teacher" />
-              </SelectTrigger>
+                <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by teacher" />
+                  </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value="all">All Teachers</SelectItem>
-                {teachers.map((teacher) => (
-                  <SelectItem key={teacher.id} value={teacher.name}>
-                    {teacher.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  <SelectContent>
+                    <SelectItem value="all">All Teachers</SelectItem>
+                    {teachers.map((teacher) => (
+                      <SelectItem key={teacher.id} value={teacher.name}>
+                        {teacher.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
 
-            <CreateButton resource="classes" />
+            {identity?.role !== "student" && <CreateButton resource="classes" />}
           </div>
         </div>
       </div>

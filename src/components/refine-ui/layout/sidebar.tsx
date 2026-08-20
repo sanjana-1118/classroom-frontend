@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import {
+  useGetIdentity,
   useLink,
   useMenu,
   useRefineOptions,
@@ -29,10 +30,20 @@ import {
 } from "@refinedev/core";
 import { ChevronRight, ListIcon } from "lucide-react";
 import React from "react";
+import type { User } from "@/types";
 
 export function Sidebar() {
   const { open } = useShadcnSidebar();
   const { menuItems, selectedKey } = useMenu();
+  const { data: identity } = useGetIdentity<User>();
+  const visibleMenuItems = menuItems.filter((item) => {
+    if (item.name === "users") return identity?.role === "admin";
+    if (item.name === "faculty") return identity?.role === "admin" || identity?.role === "teacher";
+    if (identity?.role === "student") {
+      return ["dashboard", "classes", "enrollments", "announcements", "timetable"].includes(item.name);
+    }
+    return true;
+  });
 
   return (
     <ShadcnSidebar collapsible="icon" className={cn("border-none")}>
@@ -55,7 +66,7 @@ export function Sidebar() {
           }
         )}
       >
-        {menuItems.map((item: TreeMenuItem) => (
+        {visibleMenuItems.map((item: TreeMenuItem) => (
           <SidebarItem
             key={item.key || item.name}
             item={item}
@@ -256,7 +267,7 @@ function SidebarHeader() {
             }
           )}
         >
-          {title.text}
+          Classroom
         </h2>
       </div>
 
@@ -340,10 +351,11 @@ function SidebarButton({
       variant="ghost"
       size="lg"
       className={cn(
-        "flex w-full items-center justify-start gap-2 py-2 !px-3 text-sm",
+        "flex w-full items-center justify-start gap-2 py-2 !px-3 text-sm transition-all duration-300",
         {
-          "bg-sidebar-primary": isSelected,
-          "hover:!bg-sidebar-primary/90": isSelected,
+          "bg-sidebar-primary shadow-sm": isSelected,
+          "hover:!bg-sidebar-primary/90 hover:shadow-md": isSelected,
+          "hover:bg-sidebar-accent/50 hover:-translate-y-px": !isSelected,
           "text-sidebar-primary-foreground": isSelected,
           "hover:text-sidebar-primary-foreground": isSelected,
         },

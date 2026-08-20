@@ -28,6 +28,10 @@ type ShowButtonProps = {
    * `meta` property is used when creating the URL for the related action and path.
    */
   meta?: Record<string, unknown>;
+  /**
+   * If true, hides the text label and only shows the icon
+   */
+  hideText?: boolean;
 } & React.ComponentProps<typeof Button>;
 
 export const ShowButton = React.forwardRef<
@@ -35,7 +39,7 @@ export const ShowButton = React.forwardRef<
   ShowButtonProps
 >(
   (
-    { resource, recordItemId, accessControl, meta, children, onClick, ...rest },
+    { resource, recordItemId, accessControl, meta, hideText, children, onClick, ...rest },
     ref
   ) => {
     const { hidden, disabled, LinkComponent, to, label } = useShowButton({
@@ -69,7 +73,7 @@ export const ShowButton = React.forwardRef<
           {children ?? (
             <div className="flex items-center gap-2 font-semibold">
               <Eye className="h-4 w-4" />
-              <span>{label}</span>
+              {!hideText && <span>{label}</span>}
             </div>
           )}
         </LinkComponent>

@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { CreateView } from "@/components/refine-ui/views/create-view";
+import { EditView } from "@/components/refine-ui/views/edit-view";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 
 import { Textarea } from "@/components/ui/textarea";
@@ -32,18 +32,17 @@ import { ScheduleTable } from "@/components/schedule-table";
 import { Subject, User } from "@/types";
 import z from "zod";
 
-const ClassesCreate = () => {
+const ClassesEdit = () => {
   const back = useBack();
 
   const form = useForm({
     resolver: zodResolver(classSchema),
     refineCoreProps: {
       resource: "classes",
-      action: "create",
+      action: "edit",
     },
     defaultValues: {
       status: "active",
-      schedules: [],
     },
   });
 
@@ -60,7 +59,7 @@ const ClassesCreate = () => {
     try {
       await onFinish(values);
     } catch (error) {
-      console.error("Error creating class:", error);
+      console.error("Error updating class:", error);
     }
   };
 
@@ -94,13 +93,13 @@ const ClassesCreate = () => {
   const subjectsLoading = subjectsQuery.isLoading;
 
   return (
-    <CreateView className="class-view">
+    <EditView className="class-view">
       <Breadcrumb />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Create a Class</h1>
-          <p className="text-muted-foreground mt-1">Provide the required information below to add a class.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Edit Class</h1>
+          <p className="text-muted-foreground mt-1">Update the class information below.</p>
         </div>
         <Button variant="outline" onClick={() => back()}>Go Back</Button>
       </div>
@@ -348,19 +347,19 @@ const ClassesCreate = () => {
                 <Button type="submit" size="lg" className="w-full">
                   {isSubmitting ? (
                     <div className="flex gap-1">
-                      <span>Creating Class...</span>
+                      <span>Updating Class...</span>
                       <Loader2 className="inline-block ml-2 animate-spin" />
                     </div>
                   ) : (
-                    "Create Class"
+                    "Update Class"
                   )}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
-    </CreateView>
+    </EditView>
   );
 };
 
-export default ClassesCreate;
+export default ClassesEdit;

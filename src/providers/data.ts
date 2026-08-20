@@ -34,7 +34,7 @@ const options: CreateDataProviderOptions = {
           if (field === "name" || field === "code") params.search = value;
         }
 
-        if (resource === "users") {
+        if (resource === "users" || resource === "faculty") {
           if (field === "search" || field === "name" || field === "email") {
             params.search = value;
           }
@@ -49,6 +49,12 @@ const options: CreateDataProviderOptions = {
           if (field === "name") params.search = value;
           if (field === "subject") params.subject = value;
           if (field === "teacher") params.teacher = value;
+        }
+
+        if (resource === "enrollments") {
+          if (field === "classId") params.classId = value;
+          if (field === "studentId") params.studentId = value;
+          if (field === "search") params.search = value;
         }
       });
 
@@ -82,11 +88,18 @@ const options: CreateDataProviderOptions = {
 
     mapResponse: async (response) => {
       const json: GetOneResponse = await response.json();
-      return json.data ?? {};
+      let data = (json.data ?? {}) as any;
+      // For subjects which return { subject: {...}, totals: {...} }
+      if (data.subject && data.totals) {
+        data = { ...data.subject, totals: data.totals };
+      }
+      return data;
     },
   },
 };
 
-const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options);
+const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options, {
+  credentials: "include"
+});
 
 export { dataProvider };

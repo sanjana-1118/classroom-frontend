@@ -3,6 +3,7 @@
 import { Header } from "@/components/refine-ui/layout/header";
 import { ThemeProvider } from "@/components/refine-ui/theme/theme-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AnnouncementTicker } from "@/components/refine-ui/layout/announcement-ticker";
 import { cn } from "@/lib/utils";
 import type { PropsWithChildren } from "react";
 import { Sidebar } from "./sidebar";
@@ -31,6 +32,9 @@ export function Layout({ children }: PropsWithChildren) {
               "lg:pt-6"
             )}
           >
+            <div className="mb-4">
+              <AnnouncementTicker />
+            </div>
             {children}
           </main>
         </SidebarInset>

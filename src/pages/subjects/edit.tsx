@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CreateView } from "@/components/refine-ui/views/create-view";
+import { EditView } from "@/components/refine-ui/views/edit-view";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { Textarea } from "@/components/ui/textarea";
 import { useBack, useList } from "@refinedev/core";
@@ -28,14 +28,14 @@ import { subjectSchema } from "@/lib/schema";
 import { Department } from "@/types";
 import z from "zod";
 
-const SubjectsCreate = () => {
+const SubjectsEdit = () => {
   const back = useBack();
 
   const form = useForm({
     resolver: zodResolver(subjectSchema),
     refineCoreProps: {
       resource: "subjects",
-      action: "create",
+      action: "edit",
     },
     defaultValues: {
       name: "",
@@ -55,7 +55,7 @@ const SubjectsCreate = () => {
     try {
       await onFinish(values);
     } catch (error) {
-      console.error("Error creating subject:", error);
+      console.error("Error updating subject:", error);
     }
   };
 
@@ -70,13 +70,13 @@ const SubjectsCreate = () => {
   const departmentsLoading = departmentsQuery.isLoading;
 
   return (
-    <CreateView className="subject-view">
+    <EditView className="subject-view">
       <Breadcrumb />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Create a Subject</h1>
-          <p className="text-muted-foreground mt-1">Provide the required information below to add a new core subject.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Edit Subject</h1>
+          <p className="text-muted-foreground mt-1">Update the core subject information below.</p>
         </div>
         <Button variant="outline" onClick={() => back()}>Go Back</Button>
       </div>
@@ -186,19 +186,19 @@ const SubjectsCreate = () => {
                 <Button type="submit" size="lg" className="w-full">
                   {isSubmitting ? (
                     <div className="flex gap-1">
-                      <span>Creating Subject...</span>
+                      <span>Updating Subject...</span>
                       <Loader2 className="inline-block ml-2 animate-spin" />
                     </div>
                   ) : (
-                    "Create Subject"
+                    "Update Subject"
                   )}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
-    </CreateView>
+    </EditView>
   );
 };
 
-export default SubjectsCreate;
+export default SubjectsEdit;

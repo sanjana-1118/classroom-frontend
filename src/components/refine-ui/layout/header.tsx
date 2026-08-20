@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   useActiveAuthProvider,
@@ -34,10 +35,13 @@ function DesktopHeader() {
         "gap-4",
         "border-b",
         "border-border",
-        "bg-sidebar",
+        "bg-sidebar/80",
+        "backdrop-blur-md",
         "pr-3",
         "justify-end",
-        "z-40"
+        "z-40",
+        "transition-colors",
+        "duration-200"
       )}
     >
       <ThemeToggle />
@@ -63,10 +67,13 @@ function MobileHeader() {
         "gap-2",
         "border-b",
         "border-border",
-        "bg-sidebar",
+        "bg-sidebar/80",
+        "backdrop-blur-md",
         "pr-3",
         "justify-between",
-        "z-40"
+        "z-40",
+        "transition-colors",
+        "duration-200"
       )}
     >
       <SidebarTrigger
@@ -108,7 +115,7 @@ function MobileHeader() {
             }
           )}
         >
-          {title.text}
+          Classroom
         </h2>
       </div>
 
@@ -128,8 +135,11 @@ const UserDropdown = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <UserAvatar />
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-10 gap-2 rounded-full pl-0 pr-3 py-0 hover:bg-accent/50">
+          <UserAvatar />
+          <span className="hidden max-w-28 truncate text-sm font-medium md:inline">Account</span>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
@@ -138,7 +148,7 @@ const UserDropdown = () => {
           }}
         >
           <LogOutIcon
-            className={cn("text-destructive", "hover:text-destructive")}
+            className={cn("mr-2 h-4 w-4", "text-destructive", "hover:text-destructive")}
           />
           <span className={cn("text-destructive", "hover:text-destructive")}>
             {isLoggingOut ? "Logging out..." : "Logout"}

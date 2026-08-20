@@ -33,12 +33,16 @@ type DeleteButtonProps = {
    * `meta` property is used when creating the URL for the related action and path.
    */
   meta?: Record<string, unknown>;
+  /**
+   * If true, hides the text label and only shows the icon
+   */
+  hideText?: boolean;
 } & React.ComponentProps<typeof Button>;
 
 export const DeleteButton = React.forwardRef<
   React.ComponentRef<typeof Button>,
   DeleteButtonProps
->(({ resource, recordItemId, accessControl, meta, children, ...rest }, ref) => {
+>(({ resource, recordItemId, accessControl, meta, hideText, children, ...rest }, ref) => {
   const {
     hidden,
     disabled,
@@ -79,7 +83,7 @@ export const DeleteButton = React.forwardRef<
             {children ?? (
               <div className="flex items-center gap-2 font-semibold">
                 <Trash className="h-4 w-4" />
-                <span>{label}</span>
+                {!hideText && <span>{label}</span>}
               </div>
             )}
           </Button>
