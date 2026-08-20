@@ -91,7 +91,7 @@ export const SignUpForm = () => {
       {/* Dark Blue Header */}
       <header className="h-16 bg-slate-900 border-b border-slate-800 flex justify-between items-center px-6 lg:px-[8vw] z-10 shrink-0">
         <div className="flex items-center gap-2 font-bold text-lg text-white">
-          <LibraryBig className="size-5 text-indigo-400" />
+          <img src="/logo.jpg" alt="Classroom Logo" className="size-6 rounded-sm" />
           <span>Classroom</span>
         </div>
         <div className="flex items-center gap-4">
@@ -104,7 +104,7 @@ export const SignUpForm = () => {
 
       <div className="auth-shell flex-1">
       <div className="auth-brand">
-        <div className="auth-brand-mark"><LibraryBig aria-hidden="true" /></div>
+        <div className="auth-brand-mark"><img src="/logo.jpg" alt="Classroom Logo" className="w-16 h-16 rounded-xl shadow-sm" /></div>
         <p className="auth-kicker">Classroom management</p>
         <h1>Build a better learning rhythm.</h1>
         <p className="auth-brand-copy">Register to organize classes, stay close to announcements, and make every schedule easier to follow.</p>

@@ -84,6 +84,10 @@ function App() {
               options={{
                 syncWithLocation: true,
                 warnWhenUnsavedChanges: true,
+                title: {
+                  icon: <img src="/logo.jpg" alt="Classroom Logo" className="w-8 h-8 rounded-md" />,
+                  text: "Classroom",
+                }
               }}
               resources={[
                 {
