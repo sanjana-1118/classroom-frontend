@@ -60,7 +60,10 @@ export const authProvider: AuthProvider = {
 
   check: async () => {
     try {
-      await request("get-session");
+      const payload = await request("get-session");
+      if (!payload) {
+        throw new Error("No session");
+      }
       return { authenticated: true };
     } catch {
       return {

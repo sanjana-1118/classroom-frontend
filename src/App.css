@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
 @layer base {
   * {
     @apply border-border outline-ring/50 antialiased;
@@ -13,19 +12,6 @@
     @apply bg-background text-foreground;
   }
 }
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@import "tailwindcss";
-
-@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: oklch(0.985 0.005 250);
@@ -815,5 +801,9 @@ body {
     overflow-x: auto;
     white-space: nowrap;
   }
-}@ k e y f r a m e s   m a r q u e e   {   0 %   {   t r a n s f o r m :   t r a n s l a t e X ( 1 0 0 % ) ;   }   1 0 0 %   {   t r a n s f o r m :   t r a n s l a t e X ( - 1 0 0 % ) ;   }   }  
- 
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
