@@ -29,7 +29,8 @@ const request = async (path: string, body?: Record<string, unknown>) => {
   const payload = (await response.json().catch(() => ({}))) as AuthResponse;
 
   if (!response.ok) {
-    throw new Error(payload.error?.message ?? "Authentication request failed");
+    const errorMsg = (payload as any).message || payload.error?.message || "Authentication request failed";
+    throw new Error(errorMsg);
   }
 
   return payload;
