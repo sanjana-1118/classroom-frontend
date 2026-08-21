@@ -98,7 +98,14 @@ const options: CreateDataProviderOptions = {
   },
 };
 
-const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options, {
+const getBaseUrl = () => {
+  if (typeof window !== "undefined" && window.location.hostname.endsWith(".vercel.app")) {
+    return "/api";
+  }
+  return BACKEND_BASE_URL.replace(/\/$/, "");
+};
+
+const { dataProvider } = createDataProvider(getBaseUrl(), options, {
   credentials: "include"
 });
 

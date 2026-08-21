@@ -11,12 +11,14 @@ type AuthResponse = {
   };
 };
 
-const apiBaseUrl = BACKEND_BASE_URL.replace(/\/$/, "");
-const authBaseUrl = apiBaseUrl.endsWith("/api")
-  ? apiBaseUrl
-  : `${apiBaseUrl}/api`;
+const getBaseUrl = () => {
+  if (typeof window !== "undefined" && window.location.hostname.endsWith(".vercel.app")) {
+    return "/api";
+  }
+  return BACKEND_BASE_URL.replace(/\/$/, "");
+};
 
-const authUrl = (path: string) => `${authBaseUrl}/auth/${path}`;
+const authUrl = (path: string) => `${getBaseUrl()}/auth/${path}`;
 
 const request = async (path: string, body?: Record<string, unknown>) => {
   const response = await fetch(authUrl(path), {
