@@ -25,6 +25,7 @@ const request = async (path: string, body?: Record<string, unknown>) => {
     method: body ? "POST" : "GET",
     headers: body ? { "Content-Type": "application/json" } : undefined,
     credentials: "include",
+    cache: "no-store",
     body: body ? JSON.stringify(body) : undefined,
   });
 
