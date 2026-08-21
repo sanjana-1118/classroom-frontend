@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/:match*",
+      "destination": "https://classroom-backend-omega.vercel.app/api/:match*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
