@@ -75,7 +75,7 @@ export const BASE_URL = import.meta.env.VITE_API_URL ?? BACKEND_BASE_URL;
 export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY;
 export const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY;
 
-export const REFRESH_TOKEN_URL = new URL("refresh-token", BACKEND_BASE_URL).toString();
+export const REFRESH_TOKEN_URL = `${BACKEND_BASE_URL}/refresh-token`;
 
 export const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
