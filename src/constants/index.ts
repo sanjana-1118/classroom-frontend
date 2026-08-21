@@ -61,9 +61,15 @@ const sanitizeUrl = (url: string) => {
   return url.startsWith("http") ? url : `https://${url}`;
 };
 
-const rawBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL ?? DEFAULT_BACKEND_URL;
+const getBaseUrl = () => {
+  if (typeof window !== "undefined" && window.location.hostname.endsWith(".vercel.app")) {
+    return "/api";
+  }
+  const rawBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL ?? DEFAULT_BACKEND_URL;
+  return sanitizeUrl(rawBaseUrl).replace(/\/$/, "");
+};
 
-export const BACKEND_BASE_URL = sanitizeUrl(rawBaseUrl);
+export const BACKEND_BASE_URL = getBaseUrl();
 
 export const BASE_URL = import.meta.env.VITE_API_URL ?? BACKEND_BASE_URL;
 export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY;
